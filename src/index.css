@@ -13,6 +13,8 @@ body,
 
 body {
   font-family: "Inter", "Segoe UI", Roboto, system-ui, sans-serif;
-  background: #121212;
+  background:
+    radial-gradient(circle at 15% -10%, rgba(224, 48, 63, 0.18), transparent 45%),
+    #0e0f12;
   color: #f0f0f0;
 }

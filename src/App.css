@@ -12,12 +12,8 @@
 
 .app {
   min-height: 100vh;
-  background:
-    radial-gradient(circle at 15% -10%, rgba(224, 48, 63, 0.18), transparent 45%),
-    var(--bg);
-  max-width: 1240px;
-  margin: 0 auto;
-  padding: 28px 24px 60px;
+  width: 100%;
+  padding: 28px clamp(20px, 4vw, 64px) 60px;
 }
 
 /* Header */
@@ -92,8 +88,8 @@
 /* Layout */
 .app-body {
   display: grid;
-  grid-template-columns: 1.6fr 1fr;
-  gap: 20px;
+  grid-template-columns: minmax(0, 1fr) minmax(340px, 420px);
+  gap: 24px;
   align-items: start;
 }
 
