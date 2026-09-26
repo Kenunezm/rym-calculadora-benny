@@ -1,8 +1,8 @@
-# Calculadora Benny's — RYM
+# Benny's Motors — Calculadora RYM
 
-Calculadora web para el equipo de mecánicos del servidor **RYM** (FiveM GTA V Roleplay). Permite calcular
-rápidamente el precio de piezas de rendimiento, cosméticas, de mantención, promociones y reparaciones,
-según el tipo de vehículo, respetando el tope de precio definido por el owner.
+Calculadora web para el equipo de mecánicos de **Benny's Motors** del servidor **RYM** (FiveM GTA V
+Roleplay). Permite calcular rápidamente el precio de piezas de rendimiento, cosméticas, de mantención,
+promociones y reparaciones, según el tipo de vehículo, respetando el tope de precio definido por el owner.
 
 ## Reglas de precio
 

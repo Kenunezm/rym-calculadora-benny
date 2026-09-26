@@ -7,10 +7,13 @@ interface Props {
   finalTotal: number;
   maxTotal: number;
   multiplier: number;
+  discountPct: number;
   onMultiplierChange: (n: number) => void;
+  onDiscountChange: (n: number) => void;
   onReset: () => void;
 }
 
+const MULTIPLIER_PRESETS = [1, 1.5, 2, 2.5, 3];
 const DISCOUNT_PRESETS = [5, 10, 15];
 
 export default function SummaryPanel({
@@ -18,14 +21,17 @@ export default function SummaryPanel({
   finalTotal,
   maxTotal,
   multiplier,
+  discountPct,
   onMultiplierChange,
+  onDiscountChange,
   onReset,
 }: Props) {
   const [copied, setCopied] = useState(false);
+  const payTotal = finalTotal * (1 - discountPct / 100);
 
   async function handleCopy() {
     try {
-      await navigator.clipboard.writeText(String(Math.round(finalTotal)));
+      await navigator.clipboard.writeText(String(Math.round(payTotal)));
       setCopied(true);
       setTimeout(() => setCopied(false), 1500);
     } catch {
@@ -36,25 +42,54 @@ export default function SummaryPanel({
   return (
     <div className="summary-panel">
       <div className="total-card">
-        <span className="total-label">Total Final</span>
-        <span className="total-value">{formatCLP(finalTotal)}</span>
-        <span className="total-sub">Base: {formatCLP(baseTotal)}</span>
-        <span className="total-sub">Máximo permitido (x{MAX_MULTIPLIER.toFixed(1)}): {formatCLP(maxTotal)}</span>
+        <span className="total-label">Total a Pagar</span>
+        <span className="total-value">{formatCLP(payTotal)}</span>
+        <div className="total-breakdown">
+          <span>Base: {formatCLP(baseTotal)}</span>
+          <span>Máximo permitido (x{MAX_MULTIPLIER.toFixed(1)}): {formatCLP(maxTotal)}</span>
+        </div>
       </div>
 
-      <div className="multiplier-box">
-        <label htmlFor="multiplier-slider">
-          Multiplicador de precio: <strong>x{multiplier.toFixed(1)}</strong>
-        </label>
+      <div className="quick-block">
+        <span className="quick-label">Multiplicador de precio</span>
+        <div className="chip-row">
+          {MULTIPLIER_PRESETS.map((m) => (
+            <button
+              key={m}
+              type="button"
+              className={"chip" + (multiplier === m ? " chip-active" : "")}
+              onClick={() => onMultiplierChange(m)}
+            >
+              x{m.toFixed(1)}
+            </button>
+          ))}
+        </div>
         <input
-          id="multiplier-slider"
+          className="range-fine"
           type="range"
           min={1}
           max={MAX_MULTIPLIER}
           step={0.1}
           value={multiplier}
           onChange={(e) => onMultiplierChange(parseFloat(e.target.value))}
+          aria-label="Ajuste fino de multiplicador"
         />
+      </div>
+
+      <div className="quick-block">
+        <span className="quick-label">Descuento</span>
+        <div className="chip-row">
+          {DISCOUNT_PRESETS.map((pct) => (
+            <button
+              key={pct}
+              type="button"
+              className={"chip" + (discountPct === pct ? " chip-active" : "")}
+              onClick={() => onDiscountChange(discountPct === pct ? 0 : pct)}
+            >
+              {pct}%
+            </button>
+          ))}
+        </div>
       </div>
 
       <div className="action-buttons">
@@ -64,28 +99,6 @@ export default function SummaryPanel({
         <button type="button" className="btn-reset" onClick={onReset}>
           Reiniciar
         </button>
-      </div>
-
-      <div className="discounts-table">
-        <h3 className="panel-title">Descuentos Rápidos</h3>
-        <table>
-          <thead>
-            <tr>
-              <th>%</th>
-              <th>Total</th>
-              <th>A Pagar</th>
-            </tr>
-          </thead>
-          <tbody>
-            {DISCOUNT_PRESETS.map((pct) => (
-              <tr key={pct}>
-                <td>{pct}%</td>
-                <td>{formatCLP(finalTotal)}</td>
-                <td>{formatCLP(finalTotal * (1 - pct / 100))}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
       </div>
     </div>
   );

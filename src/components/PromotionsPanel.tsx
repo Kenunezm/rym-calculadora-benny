@@ -22,7 +22,7 @@ export default function PromotionsPanel({ category, selected, onToggle }: Props)
             </div>
             <p className="promo-description">{promo.description}</p>
             <button type="button" onClick={() => onToggle(promo.key)}>
-              {isActive ? "Quitar" : "Agregar"}
+              {isActive ? "✓ Agregado" : "Agregar"}
             </button>
           </div>
         );

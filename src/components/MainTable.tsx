@@ -1,5 +1,6 @@
 import { REPAIRS, type CategoryKey, COSMETICO, MANTENCION, RENDIMIENTO } from "../data/prices";
 import { formatCLP } from "../utils/format";
+import Stepper from "./Stepper";
 
 interface Props {
   category: CategoryKey;
@@ -11,12 +12,6 @@ interface Props {
   onChangeCosmetico: (n: number) => void;
   onChangeMantencion: (n: number) => void;
   onChangeRepair: (key: string, n: number) => void;
-}
-
-function parseQty(raw: string): number {
-  const n = parseInt(raw, 10);
-  if (Number.isNaN(n) || n < 0) return 0;
-  return n;
 }
 
 export default function MainTable({
@@ -35,88 +30,58 @@ export default function MainTable({
   const mantencionPrice = MANTENCION[category];
 
   return (
-    <table className="main-table">
-      <thead>
-        <tr>
-          <th>PIEZAS</th>
-          <th>UNIDADES</th>
-          <th>PRECIO</th>
-          <th>TOTAL</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr className="section-row">
-          <td colSpan={4}>Rendimiento</td>
-        </tr>
-        <tr>
-          <td>Pieza de Rendimiento</td>
-          <td>
-            <input
-              type="number"
-              min={0}
-              value={qtyRendimiento}
-              onChange={(e) => onChangeRendimiento(parseQty(e.target.value))}
-            />
-          </td>
-          <td>{formatCLP(rendimientoPrice)}</td>
-          <td>{formatCLP(rendimientoPrice * qtyRendimiento)}</td>
-        </tr>
+    <div className="parts-grid">
+      <section className="parts-section">
+        <h3 className="parts-section-title">Rendimiento</h3>
+        <div className="part-card">
+          <div className="part-info">
+            <span className="part-name">Pieza de Rendimiento</span>
+            <span className="part-unit-price">{formatCLP(rendimientoPrice)} c/u</span>
+          </div>
+          <Stepper value={qtyRendimiento} onChange={onChangeRendimiento} />
+          <span className="part-subtotal">{formatCLP(rendimientoPrice * qtyRendimiento)}</span>
+        </div>
+      </section>
 
-        <tr className="section-row">
-          <td colSpan={4}>Cosmético</td>
-        </tr>
-        <tr>
-          <td>Pieza Cosmética</td>
-          <td>
-            <input
-              type="number"
-              min={0}
-              value={qtyCosmetico}
-              onChange={(e) => onChangeCosmetico(parseQty(e.target.value))}
-            />
-          </td>
-          <td>{formatCLP(cosmeticoPrice)}</td>
-          <td>{formatCLP(cosmeticoPrice * qtyCosmetico)}</td>
-        </tr>
+      <section className="parts-section">
+        <h3 className="parts-section-title">Cosmético</h3>
+        <div className="part-card">
+          <div className="part-info">
+            <span className="part-name">Pieza Cosmética</span>
+            <span className="part-unit-price">{formatCLP(cosmeticoPrice)} c/u</span>
+          </div>
+          <Stepper value={qtyCosmetico} onChange={onChangeCosmetico} />
+          <span className="part-subtotal">{formatCLP(cosmeticoPrice * qtyCosmetico)}</span>
+        </div>
+      </section>
 
-        <tr className="section-row">
-          <td colSpan={4}>Mantención</td>
-        </tr>
-        <tr>
-          <td>Pieza de Mantención</td>
-          <td>
-            <input
-              type="number"
-              min={0}
-              value={qtyMantencion}
-              onChange={(e) => onChangeMantencion(parseQty(e.target.value))}
-            />
-          </td>
-          <td>{formatCLP(mantencionPrice)}</td>
-          <td>{formatCLP(mantencionPrice * qtyMantencion)}</td>
-        </tr>
+      <section className="parts-section">
+        <h3 className="parts-section-title">Mantención</h3>
+        <div className="part-card">
+          <div className="part-info">
+            <span className="part-name">Pieza de Mantención</span>
+            <span className="part-unit-price">{formatCLP(mantencionPrice)} c/u</span>
+          </div>
+          <Stepper value={qtyMantencion} onChange={onChangeMantencion} />
+          <span className="part-subtotal">{formatCLP(mantencionPrice * qtyMantencion)}</span>
+        </div>
+      </section>
 
-        <tr className="section-row">
-          <td colSpan={4}>Reparaciones y Kits</td>
-        </tr>
+      <section className="parts-section">
+        <h3 className="parts-section-title">Reparaciones y Kits</h3>
         {REPAIRS.map((r) => (
-          <tr key={r.key}>
-            <td>
-              {r.label} <span className="payment-badge">{r.paymentMethod}</span>
-            </td>
-            <td>
-              <input
-                type="number"
-                min={0}
-                value={qtyRepairs[r.key] ?? 0}
-                onChange={(e) => onChangeRepair(r.key, parseQty(e.target.value))}
-              />
-            </td>
-            <td>{formatCLP(r.price)}</td>
-            <td>{formatCLP(r.price * (qtyRepairs[r.key] ?? 0))}</td>
-          </tr>
+          <div className="part-card" key={r.key}>
+            <div className="part-info">
+              <span className="part-name">
+                {r.label} <span className="payment-badge">{r.paymentMethod}</span>
+              </span>
+              <span className="part-unit-price">{formatCLP(r.price)} c/u</span>
+            </div>
+            <Stepper value={qtyRepairs[r.key] ?? 0} onChange={(n) => onChangeRepair(r.key, n)} />
+            <span className="part-subtotal">{formatCLP(r.price * (qtyRepairs[r.key] ?? 0))}</span>
+          </div>
         ))}
-      </tbody>
-    </table>
+      </section>
+    </div>
   );
 }

@@ -12,7 +12,7 @@ body,
 }
 
 body {
-  font-family: "Segoe UI", Roboto, system-ui, sans-serif;
+  font-family: "Inter", "Segoe UI", Roboto, system-ui, sans-serif;
   background: #121212;
   color: #f0f0f0;
 }

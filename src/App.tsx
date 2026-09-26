@@ -26,6 +26,7 @@ function initialState() {
     qtyRepairs: { ...INITIAL_REPAIR_QTY },
     selectedPromos: {} as Record<string, boolean>,
     multiplier: 1,
+    discountPct: 0,
   };
 }
 
@@ -51,8 +52,9 @@ function App() {
   return (
     <div className="app">
       <header className="app-header">
-        <h1>Calculadora Benny's — RYM</h1>
-        <p className="subtitle">Herramienta de cálculo para mecánicos</p>
+        <span className="brand-badge">RYM</span>
+        <h1>Benny's Motors</h1>
+        <p className="subtitle">Calculadora de mecánico — un par de clicks y listo</p>
       </header>
 
       <CategoryTabs
@@ -84,7 +86,9 @@ function App() {
             finalTotal={finalTotal}
             maxTotal={maxTotal}
             multiplier={state.multiplier}
+            discountPct={state.discountPct}
             onMultiplierChange={(multiplier) => setState((s) => ({ ...s, multiplier }))}
+            onDiscountChange={(discountPct) => setState((s) => ({ ...s, discountPct }))}
             onReset={() => setState(initialState())}
           />
           <PromotionsPanel
