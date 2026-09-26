@@ -52,7 +52,7 @@ function App() {
   return (
     <div className="app">
       <header className="app-header">
-        <span className="brand-badge">RYM</span>
+        <span className="brand-badge">Yakuza</span>
         <h1>Benny's Motors</h1>
         <p className="subtitle">Calculadora de mecánico — un par de clicks y listo</p>
       </header>

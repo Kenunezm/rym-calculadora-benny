@@ -1,6 +1,6 @@
-# Benny's Motors — Calculadora RYM
+# Benny's Motors — Calculadora Yakuza
 
-Calculadora web para el equipo de mecánicos de **Benny's Motors** del servidor **RYM** (FiveM GTA V
+Calculadora web para el equipo de mecánicos de **Benny's Motors** del servidor **Yakuza** (FiveM GTA V
 Roleplay). Permite calcular rápidamente el precio de piezas de rendimiento, cosméticas, de mantención,
 promociones y reparaciones, según el tipo de vehículo, respetando el tope de precio definido por el owner.
 
