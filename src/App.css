@@ -51,6 +51,38 @@
   font-size: 14px;
 }
 
+/* Top-level business tabs */
+.top-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  margin-bottom: 24px;
+}
+
+.top-tab {
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 11px 24px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.top-tab:hover {
+  border-color: var(--red);
+}
+
+.top-tab.active {
+  background: linear-gradient(135deg, var(--red), var(--red-dark));
+  border-color: var(--red);
+  color: #fff;
+  box-shadow: 0 4px 14px rgba(224, 48, 63, 0.35);
+}
+
 /* Category tabs */
 .category-tabs {
   display: flex;
