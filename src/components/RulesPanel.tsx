@@ -3,16 +3,11 @@ export default function RulesPanel() {
     <div className="rules-panel">
       <h3 className="panel-title">Reglamento de Precios</h3>
       <ol>
-        <li>El monto "TOTAL FINAL" es el valor que debe cobrarse al cliente.</li>
-        <li>
-          No se puede cobrar más del <strong>x3.0</strong> del precio base estimado por el owner
-          (ver "Máximo permitido").
-        </li>
-        <li>Se pueden abaratar costos libremente, siempre por convenio o precio mecánico.</li>
-        <li>
-          Las reparaciones dentro/fuera de taller se cobran en Efectivo/Transferencia; el Kit de
-          Reparación se cobra vía Tablet Factura.
-        </li>
+        <li>El total se calcula usando el precio de venta indicado para cada artículo.</li>
+        <li>Los artículos con tope x2 o x3 respetan ese multiplicador individual.</li>
+        <li>Los descuentos se aplican al total de venta calculado.</li>
+        <li>Los artículos marcados como «No venta» o «Venta pendiente de definir» no se suman al total.</li>
+        <li>Los topes de mantención se aplican al total de venta del grupo correspondiente.</li>
       </ol>
     </div>
   );

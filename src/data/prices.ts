@@ -1,157 +1,100 @@
-// Precios base según la economía del servidor (definidos por el owner).
-// Regla: el precio final a cobrar NO puede superar el x3.0 de estos valores.
-export const MAX_MULTIPLIER = 3.0;
-
-export type CategoryKey =
-  | "compacto"
-  | "moto"
-  | "suv"
-  | "coupeSedan"
-  | "deportivo"
-  | "muscle"
-  | "super"
-  | "vip";
-
-export interface CategoryInfo {
-  key: CategoryKey;
+/** Catálogo de precios de Benny's Motors según la tabla entregada. */
+export interface PriceItem {
+  key: string;
   label: string;
+  /** Precio de compra / valor base. null cuando la tabla no lo indica. */
+  purchasePrice: number | null;
+  /** Multiplicador máximo de venta (por ejemplo, 3 equivale a x3). */
+  maxMultiplier?: number;
+  /** Precio de venta fijo cuando la tabla indica un valor directo. */
+  fixedSalePrice?: number;
+  /** Texto informativo para valores pendientes o condiciones especiales. */
+  note?: string;
+  /** Los elementos sin un precio de venta definido se muestran pero no se pueden agregar. */
+  sellable: boolean;
 }
 
-export const CATEGORIES: CategoryInfo[] = [
-  { key: "compacto", label: "Compacto" },
-  { key: "moto", label: "Moto" },
-  { key: "suv", label: "SUV y Offroad" },
-  { key: "coupeSedan", label: "Coupe y Sedán" },
-  { key: "deportivo", label: "Deportivo" },
-  { key: "muscle", label: "Muscle" },
-  { key: "super", label: "Super" },
-  { key: "vip", label: "VIP" },
-];
-
-type PriceMap = Record<CategoryKey, number>;
-
-// Piezas de Rendimiento (unidad)
-export const RENDIMIENTO: PriceMap = {
-  compacto: 550,
-  moto: 675,
-  suv: 800,
-  coupeSedan: 1200,
-  deportivo: 2000,
-  muscle: 2000,
-  super: 5000,
-  vip: 10000,
-};
-
-// Piezas Cosméticas (unidad)
-export const COSMETICO: PriceMap = {
-  compacto: 550,
-  moto: 675,
-  suv: 800,
-  coupeSedan: 800,
-  deportivo: 1000,
-  muscle: 1000,
-  super: 3000,
-  vip: 5000,
-};
-
-// Piezas de Mantención (unidad)
-export const MANTENCION: PriceMap = {
-  compacto: 250,
-  moto: 400,
-  suv: 650,
-  coupeSedan: 700,
-  deportivo: 1000,
-  muscle: 1000,
-  super: 2500,
-  vip: 1000,
-};
-
-// Promociones
-export const PROMO_FULL_RENDIMIENTO: PriceMap = {
-  compacto: 5000,
-  moto: 7500,
-  suv: 7500,
-  coupeSedan: 12500,
-  deportivo: 15000,
-  muscle: 12000,
-  super: 22500,
-  vip: 50000,
-};
-
-export const PROMO_FULL_TODO: PriceMap = {
-  compacto: 12000,
-  moto: 16500,
-  suv: 17500,
-  coupeSedan: 32500,
-  deportivo: 45000,
-  muscle: 35000,
-  super: 92500,
-  vip: 95000,
-};
-
-export const PROMO_FULL_MANTENCION: PriceMap = {
-  compacto: 15000,
-  moto: 17500,
-  suv: 17500,
-  coupeSedan: 32500,
-  deportivo: 45000,
-  muscle: 25000,
-  super: 50000,
-  vip: 65000,
-};
-
-export interface PromoInfo {
-  key: "rendimiento" | "todo" | "mantencion";
+export interface PriceGroup {
+  key: string;
   label: string;
-  description: string;
-  prices: PriceMap;
+  items: PriceItem[];
+  /** Tope de venta total del grupo, cuando se indica en la tabla. */
+  maxTotal?: number;
 }
 
-export const PROMOTIONS: PromoInfo[] = [
+export const PRICE_GROUPS: PriceGroup[] = [
   {
-    key: "rendimiento",
-    label: "Full Rendimiento",
-    description: "Unidad x 5 piezas de rendimiento",
-    prices: PROMO_FULL_RENDIMIENTO,
+    key: "estetico",
+    label: "Estético",
+    items: [
+      { key: "cosmeticos", label: "Cosméticos", purchasePrice: 1000, maxMultiplier: 3, sellable: true },
+      { key: "pintura", label: "Pintura", purchasePrice: 1500, maxMultiplier: 3, sellable: true },
+      { key: "led", label: "LED", purchasePrice: 500, maxMultiplier: 3, sellable: true },
+      { key: "ruedas", label: "Ruedas", purchasePrice: 2000, maxMultiplier: 3, sellable: true },
+      { key: "extra-kit", label: "Extra kit", purchasePrice: 1500, maxMultiplier: 3, sellable: true },
+      { key: "stancer", label: "Stancer", purchasePrice: 3000, note: "No venta", sellable: false },
+      { key: "smoke", label: "Smoke", purchasePrice: 1000, maxMultiplier: 3, sellable: true },
+    ],
   },
   {
-    key: "todo",
-    label: "Full Todo",
-    description: "Cosmético + Rendimiento completo",
-    prices: PROMO_FULL_TODO,
+    key: "rendimiento",
+    label: "Rendimiento",
+    items: [
+      { key: "performance", label: "Performance", purchasePrice: 2000, maxMultiplier: 3, sellable: true },
+      { key: "turbo", label: "Turbo", purchasePrice: 4000, maxMultiplier: 3, sellable: true },
+      { key: "frenos-ceramicos", label: "Frenos cerámicos", purchasePrice: 20000, maxMultiplier: 3, sellable: true },
+      { key: "awd", label: "AWD", purchasePrice: 20000, maxMultiplier: 3, sellable: true },
+      { key: "rdw", label: "RDW", purchasePrice: 15000, maxMultiplier: 3, sellable: true },
+      { key: "fwd", label: "FWD", purchasePrice: 10000, maxMultiplier: 3, sellable: true },
+      { key: "i4", label: "i4", purchasePrice: 30000, maxMultiplier: 2, sellable: true },
+      { key: "v6", label: "V6", purchasePrice: 40000, maxMultiplier: 2, sellable: true },
+      { key: "v8", label: "V8", purchasePrice: 50000, maxMultiplier: 2, sellable: true },
+      { key: "v12", label: "V12", purchasePrice: 250000, maxMultiplier: 2, sellable: true },
+      { key: "kit-drift", label: "Kit Drift", purchasePrice: 50000, maxMultiplier: 2, sellable: true },
+      { key: "nitro-instalacion", label: "Instalación de nitro", purchasePrice: null, fixedSalePrice: 2500, sellable: true },
+      { key: "nitro-vacio", label: "Nitro vacío", purchasePrice: 2000, note: "Venta pendiente de definir", sellable: false },
+      { key: "nitro-no2", label: "Nitro NO2", purchasePrice: 4000, maxMultiplier: 3, sellable: true },
+    ],
   },
   {
     key: "mantencion",
-    label: "Full Mantención",
-    description: "Total de piezas de mantención",
-    prices: PROMO_FULL_MANTENCION,
+    label: "Mantención",
+    maxTotal: 30000,
+    items: [
+      { key: "aceite", label: "Aceite", purchasePrice: 250, maxMultiplier: 3, sellable: true },
+      { key: "filtro", label: "Filtro", purchasePrice: 100, maxMultiplier: 3, sellable: true },
+      { key: "bujias", label: "Bujías", purchasePrice: 50, maxMultiplier: 3, sellable: true },
+      { key: "pastillas", label: "Pastillas", purchasePrice: 50, maxMultiplier: 3, sellable: true },
+      { key: "suspension", label: "Suspensión", purchasePrice: 150, maxMultiplier: 3, sellable: true },
+      { key: "neumaticos", label: "Neumáticos", purchasePrice: 250, maxMultiplier: 3, sellable: true },
+      { key: "embrague", label: "Embrague", purchasePrice: 1000, maxMultiplier: 3, sellable: true },
+    ],
+  },
+  {
+    key: "mantencion-especial",
+    label: "Mantención especial",
+    maxTotal: 100000,
+    items: [
+      { key: "ev-motor", label: "EV motor", purchasePrice: 15000, note: "Venta pendiente de definir", sellable: false },
+      { key: "coolant", label: "Coolant", purchasePrice: 5000, note: "Venta pendiente de definir", sellable: false },
+      { key: "bateria", label: "Batería", purchasePrice: 20000, note: "Venta pendiente de definir", sellable: false },
+    ],
+  },
+  {
+    key: "kits-consumibles",
+    label: "Kits y consumibles",
+    items: [
+      { key: "kit-reparacion", label: "Kit de reparación", purchasePrice: null, fixedSalePrice: 10000, sellable: true },
+      { key: "kit-limpieza", label: "Kit de limpieza", purchasePrice: 150, fixedSalePrice: 500, sellable: true },
+      { key: "cinta", label: "Cinta", purchasePrice: 50, fixedSalePrice: 100, sellable: true },
+    ],
   },
 ];
 
-export interface RepairInfo {
-  key: "tallerInterno" | "tallerExterno" | "kit";
-  label: string;
-  price: number;
-  paymentMethod: string;
+export function getSalePrice(item: PriceItem): number {
+  if (item.fixedSalePrice !== undefined) return item.fixedSalePrice;
+  if (item.purchasePrice !== null && item.maxMultiplier !== undefined) {
+    return item.purchasePrice * item.maxMultiplier;
+  }
+  return 0;
 }
-
-export const REPAIRS: RepairInfo[] = [
-  {
-    key: "tallerInterno",
-    label: "Reparación en Taller",
-    price: 1000,
-    paymentMethod: "Efectivo/Transferencia",
-  },
-  {
-    key: "tallerExterno",
-    label: "Reparación fuera del Taller",
-    price: 2500,
-    paymentMethod: "Efectivo/Transferencia",
-  },
-  {
-    key: "kit",
-    label: "Kit de Reparación",
-    price: 1500,
-    paymentMethod: "Tablet Factura",
-  },
-];

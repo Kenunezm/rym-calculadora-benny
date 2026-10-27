@@ -1,102 +1,51 @@
 import { useState } from "react";
-import {
-  CATEGORIES,
-  COSMETICO,
-  MANTENCION,
-  PROMOTIONS,
-  RENDIMIENTO,
-  REPAIRS,
-  type CategoryKey,
-} from "../data/prices";
-import CategoryTabs from "./CategoryTabs";
+import { PRICE_GROUPS, getSalePrice } from "../data/prices";
 import MainTable from "./MainTable";
-import PromotionsPanel from "./PromotionsPanel";
 import SummaryPanel from "./SummaryPanel";
 import RulesPanel from "./RulesPanel";
 
-const INITIAL_REPAIR_QTY = Object.fromEntries(REPAIRS.map((r) => [r.key, 0]));
-
-function initialState() {
-  return {
-    category: "compacto" as CategoryKey,
-    qtyRendimiento: 0,
-    qtyCosmetico: 0,
-    qtyMantencion: 0,
-    qtyRepairs: { ...INITIAL_REPAIR_QTY },
-    selectedPromos: {} as Record<string, boolean>,
-    multiplier: 1,
-    discountPct: 0,
-  };
+function initialQuantities(): Record<string, number> {
+  return Object.fromEntries(PRICE_GROUPS.flatMap((group) => group.items.map((item) => [item.key, 0])));
 }
 
 export default function MecanicoCalculator() {
-  const [state, setState] = useState(initialState);
+  const [quantities, setQuantities] = useState<Record<string, number>>(initialQuantities);
+  const [discountPct, setDiscountPct] = useState(0);
 
-  const rendimientoTotal = RENDIMIENTO[state.category] * state.qtyRendimiento;
-  const cosmeticoTotal = COSMETICO[state.category] * state.qtyCosmetico;
-  const mantencionTotal = MANTENCION[state.category] * state.qtyMantencion;
-  const repairsTotal = REPAIRS.reduce(
-    (sum, r) => sum + r.price * (state.qtyRepairs[r.key] ?? 0),
-    0
-  );
-  const promosTotal = PROMOTIONS.reduce(
-    (sum, p) => sum + (state.selectedPromos[p.key] ? p.prices[state.category] : 0),
-    0
-  );
+  const baseTotal = PRICE_GROUPS.reduce((total, group) =>
+    total + group.items.reduce((groupTotal, item) =>
+      groupTotal + (item.purchasePrice ?? 0) * (quantities[item.key] ?? 0), 0), 0);
 
-  const baseTotal = rendimientoTotal + cosmeticoTotal + mantencionTotal + repairsTotal + promosTotal;
-  const finalTotal = baseTotal * state.multiplier;
-  const maxTotal = baseTotal * 3;
+  const finalTotal = PRICE_GROUPS.reduce((total, group) => {
+    const groupSaleTotal = group.items.reduce((groupTotal, item) =>
+      groupTotal + getSalePrice(item) * (quantities[item.key] ?? 0), 0);
+    return total + (group.maxTotal === undefined ? groupSaleTotal : Math.min(groupSaleTotal, group.maxTotal));
+  }, 0);
+
+  const onReset = () => {
+    setQuantities(initialQuantities());
+    setDiscountPct(0);
+  };
 
   return (
-    <>
-      <CategoryTabs
-        categories={CATEGORIES}
-        selected={state.category}
-        onSelect={(category) => setState((s) => ({ ...s, category }))}
-      />
-
-      <div className="app-body">
-        <div className="app-main">
-          <MainTable
-            category={state.category}
-            qtyRendimiento={state.qtyRendimiento}
-            qtyCosmetico={state.qtyCosmetico}
-            qtyMantencion={state.qtyMantencion}
-            qtyRepairs={state.qtyRepairs}
-            onChangeRendimiento={(n) => setState((s) => ({ ...s, qtyRendimiento: n }))}
-            onChangeCosmetico={(n) => setState((s) => ({ ...s, qtyCosmetico: n }))}
-            onChangeMantencion={(n) => setState((s) => ({ ...s, qtyMantencion: n }))}
-            onChangeRepair={(key, n) =>
-              setState((s) => ({ ...s, qtyRepairs: { ...s.qtyRepairs, [key]: n } }))
-            }
-          />
-        </div>
-
-        <div className="app-side">
-          <SummaryPanel
-            baseTotal={baseTotal}
-            finalTotal={finalTotal}
-            maxTotal={maxTotal}
-            multiplier={state.multiplier}
-            discountPct={state.discountPct}
-            onMultiplierChange={(multiplier) => setState((s) => ({ ...s, multiplier }))}
-            onDiscountChange={(discountPct) => setState((s) => ({ ...s, discountPct }))}
-            onReset={() => setState(initialState())}
-          />
-          <PromotionsPanel
-            category={state.category}
-            selected={state.selectedPromos}
-            onToggle={(key) =>
-              setState((s) => ({
-                ...s,
-                selectedPromos: { ...s.selectedPromos, [key]: !s.selectedPromos[key] },
-              }))
-            }
-          />
-          <RulesPanel />
-        </div>
+    <div className="app-body">
+      <div className="app-main">
+        <MainTable
+          quantities={quantities}
+          onQuantityChange={(key, quantity) => setQuantities((current) => ({ ...current, [key]: quantity }))}
+        />
       </div>
-    </>
+      <div className="app-side">
+        <SummaryPanel
+          baseTotal={baseTotal}
+          finalTotal={finalTotal}
+          maxTotal={finalTotal}
+          discountPct={discountPct}
+          onDiscountChange={setDiscountPct}
+          onReset={onReset}
+        />
+        <RulesPanel />
+      </div>
+    </div>
   );
 }
